@@ -2,61 +2,106 @@ import React, { useEffect, useState } from "react";
 import http from "../api/http";
 
 export default function Metrics() {
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [steps, setSteps] = useState("");
   const [sleepHours, setSleepHours] = useState("");
   const [waterMl, setWaterMl] = useState("");
-  const [items, setItems] = useState([]);
-  const [err, setErr] = useState("");
+  const [history, setHistory] = useState([]);
 
-  const load = async () => {
-    const res = await http.get("/metrics");
-    setItems(res.data);
+  const loadHistory = async () => {
+    try {
+      const res = await http.get("/metrics");
+      setHistory(res.data);
+    } catch (e) {
+      console.error("Failed to load metrics history");
+    }
   };
 
   useEffect(() => {
-    load();
+    loadHistory();
   }, []);
 
-  const save = async () => {
-    setErr("");
+  const submit = async (e) => {
+    e.preventDefault();
     try {
       await http.post("/metrics", {
-        date: new Date(date),
-        weightKg: weightKg === "" ? undefined : Number(weightKg),
-        steps: steps === "" ? undefined : Number(steps),
-        sleepHours: sleepHours === "" ? undefined : Number(sleepHours),
-        waterMl: waterMl === "" ? undefined : Number(waterMl)
+        date,
+        weightKg: weightKg ? Number(weightKg) : undefined,
+        steps: steps ? Number(steps) : undefined,
+        sleepHours: sleepHours ? Number(sleepHours) : undefined,
+        waterMl: waterMl ? Number(waterMl) : undefined,
       });
-      await load();
+      setWeightKg("");
+      setSteps("");
+      setSleepHours("");
+      setWaterMl("");
+      loadHistory();
     } catch (e) {
-      setErr(e?.response?.data?.error || "Failed to save metric");
+      console.error("Failed to save metrics");
     }
   };
 
   return (
-    <div>
-      <h2>Metrics</h2>
-      {err && <div style={{ color: "crimson" }}>{err}</div>}
+    <div className="splitLayout">
+      {/* LEFT SIDE — CONTENT */}
+      <div>
+        <h1>Metrics</h1>
 
-      <div style={{ display: "grid", gap: 8, maxWidth: 360 }}>
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <input value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="weightKg" />
-        <input value={steps} onChange={(e) => setSteps(e.target.value)} placeholder="steps" />
-        <input value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder="sleepHours" />
-        <input value={waterMl} onChange={(e) => setWaterMl(e.target.value)} placeholder="waterMl" />
-        <button onClick={save}>Save (upsert)</button>
+        <form onSubmit={submit}>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+          <input
+            placeholder="weightKg"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value)}
+          />
+          <input
+            placeholder="steps"
+            value={steps}
+            onChange={(e) => setSteps(e.target.value)}
+          />
+          <input
+            placeholder="sleepHours"
+            value={sleepHours}
+            onChange={(e) => setSleepHours(e.target.value)}
+          />
+          <input
+            placeholder="waterMl"
+            value={waterMl}
+            onChange={(e) => setWaterMl(e.target.value)}
+          />
+
+          <button type="submit" className="btn primary">
+            Save (upsert)
+          </button>
+        </form>
+
+        <h2>History</h2>
+
+        <ul>
+          {history.map((m) => (
+            <li key={m._id}>
+              <div>
+                {m.date} | weight: {m.weightKg ?? "-"} | steps:{" "}
+                {m.steps ?? "-"}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <h3 style={{ marginTop: 16 }}>History</h3>
-      <ul>
-        {items.map((m) => (
-          <li key={m._id}>
-            {new Date(m.date).toISOString().slice(0, 10)} | weight: {m.weightKg ?? "-"} | steps: {m.steps ?? "-"}
-          </li>
-        ))}
-      </ul>
+      {/* RIGHT SIDE — VISUAL */}
+      <div className="splitVisual">
+        <img
+          src="https://hls.kz/wp-content/uploads/2023/04/hls.jpeg"
+          alt="Fitness"
+        />
+      </div>
     </div>
   );
 }

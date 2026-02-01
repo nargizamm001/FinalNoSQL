@@ -21,13 +21,16 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {err && <div style={{ color: "crimson" }}>{err}</div>}
-      <form onSubmit={submit} style={{ display: "grid", gap: 8, maxWidth: 360 }}>
+    <div className="authPage">
+      <div className="authHeader">
+        <h2>Login</h2>
+        {err && <div className="authError">{err}</div>}
+      </div>
+
+      <form onSubmit={submit} className="authForm">
         <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
         <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
-        <button>Login</button>
+        <button type="submit" className="btn primary">Login</button>
       </form>
     </div>
   );

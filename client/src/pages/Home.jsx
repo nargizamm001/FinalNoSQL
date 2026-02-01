@@ -5,68 +5,43 @@ export default function Home() {
   const token = localStorage.getItem("token");
 
   return (
-    <div className="stack gap-16">
-      <section className="hero">
-        <div className="stack gap-12">
-          <span className="badge">fitness tracker</span>
-          <h1 className="heroTitle">Track workouts, metrics, and progress in one place</h1>
-          <p className="heroText">
-            Create workouts with exercises and sets, log daily metrics, and view analytics like weekly summaries and top exercises.
+    <div className="homeWrap">
+      <div className="homeCard">
+        <div className="homeLeft">
+          <h1 className="homeTitle">FitTrack</h1>
+          <p className="homeText">
+            Track your workouts, daily metrics, and fitness progress in one place.
+            Simple, clear, and built with MongoDB analytics.
           </p>
 
-          <div className="row gap-10 wrap">
+          <ul className="homeList">
+            <li>✔ Create and manage workouts</li>
+            <li>✔ Track weight, steps, sleep and water</li>
+            <li>✔ View analytics and weekly summaries</li>
+          </ul>
+
+          <div className="homeActions">
             {token ? (
               <>
-                <Link className="btn primary" to="/workouts">Go to Workouts</Link>
-                <Link className="btn" to="/analytics">Open Analytics</Link>
+                <Link to="/workouts" className="btn primary">Go to Workouts</Link>
+                <Link to="/analytics" className="btn">View Analytics</Link>
               </>
             ) : (
               <>
-                <Link className="btn primary" to="/register">Get started</Link>
-                <Link className="btn" to="/login">Login</Link>
+                <Link to="/register" className="btn primary">Get started</Link>
+                <Link to="/login" className="btn">Login</Link>
               </>
             )}
           </div>
         </div>
 
-        <div className="heroCard">
-          <div className="stat">
-            <div className="statNum">15+</div>
-            <div className="statLabel">REST endpoints</div>
-          </div>
-          <div className="stat">
-            <div className="statNum">JWT</div>
-            <div className="statLabel">secure auth</div>
-          </div>
-          <div className="stat">
-            <div className="statNum">2</div>
-            <div className="statLabel">aggregation reports</div>
-          </div>
-
-          <div className="divider"></div>
-
-          <div className="muted">
-            Tip: after login, start with Workouts → add items → add sets. Then log Metrics and check Analytics.
-          </div>
+        <div className="homeRight">
+          <img
+            src="https://www.primalstrength.com/cdn/shop/files/gymdesign_render_Two_collumn_grid_cb1b5850-fa8e-4a7b-a2b3-190c2e45facd.jpg?v=1680719688&width=1500"
+            alt="Fitness"
+          />
         </div>
-      </section>
-
-      <section className="grid3">
-        <div className="card">
-          <div className="cardTitle">Workouts</div>
-          <div className="muted">Create workouts, add exercises and sets, edit and delete easily.</div>
-        </div>
-
-        <div className="card">
-          <div className="cardTitle">Metrics</div>
-          <div className="muted">Track daily values (weight, steps, sleep, water) and keep history.</div>
-        </div>
-
-        <div className="card">
-          <div className="cardTitle">Analytics</div>
-          <div className="muted">Weekly summary + top exercises from aggregation pipelines.</div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
