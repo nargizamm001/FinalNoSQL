@@ -53,12 +53,20 @@ Referenced documents are used to separate user data and ensure security.
 Embedded documents are used for workout exercises to allow fast reads without joins.
 
 ## Indexing and Optimization
-Compound indexes are used to optimize common queries.
 
-- Workouts index: `{ user: 1, date: -1 }`
-  - speeds up fetching user workouts by date
-- Metrics index: `{ user: 1, date: -1 }`
-  - improves performance of analytics queries
+To improve query performance, compound indexes are used for frequently accessed data.
+
+- **Workouts collection**
+  - Compound index: `{ userId: 1, date: -1 }`
+  - Optimizes queries that fetch workouts for a specific user sorted by date.
+
+- **Metrics collection**
+  - Compound unique index: `{ userId: 1, date: -1 }`
+  - Ensures one metric entry per user per day and improves analytics performance.
+
+Indexes are defined directly in the Mongoose models:
+- `server/src/models/Workout.js`
+- `server/src/models/Metric.js`
 
 ## REST API Endpoints
 
@@ -72,18 +80,20 @@ Compound indexes are used to optimize common queries.
 - GET `/api/workouts/:id`
 - PUT `/api/workouts/:id`
 - DELETE `/api/workouts/:id`
-- POST `/api/workouts/:id/exercises`
-- DELETE `/api/workouts/:id/exercises/:exerciseId`
+- POST `/api/workouts/:id/items`
+- POST `/api/workouts/:id/items/:exerciseId/sets`
+- PATCH `/api/workouts/:id/items/:exerciseId/sets/:setId`
+- DELETE `/api/workouts/:id/items/:exerciseId/sets/:setId`
+- DELETE `/api/workouts/:id/items/:exerciseId`
 
 ### Metrics
-- POST `/api/metrics`
+- POST `/api/metrics` (upsert metric entry for a specific date)
 - GET `/api/metrics`
-- PUT `/api/metrics/:id`
 - DELETE `/api/metrics/:id`
 
 ### Analytics (Aggregation)
-- GET `/api/analytics/workouts`
-- GET `/api/analytics/metrics`
+- GET `/api/analytics/weekly-summary`
+- GET `/api/analytics/top-exercises`
 
 ## MongoDB Features Used
 - Full CRUD operations across multiple collections
